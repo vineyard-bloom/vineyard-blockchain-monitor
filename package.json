@@ -1,6 +1,6 @@
 {
   "name": "vineyard-minotaur",
-  "version": "1.0.0-beta.34",
+  "version": "1.0.0",
   "description": "Blockchain monitor",
   "main": "src/index.js",
   "types": "src/index.d.ts",
@@ -11,7 +11,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "vineyard-blockchain": "vineyard-bloom/vineyard-blockchain#1.0.0-beta",
+    "vineyard-blockchain": "vineyard-bloom/vineyard-blockchain#1.0.1-beta",
     "vineyard-ground": "vineyard-bloom/vineyard-ground#1.0.0-beta"
   },
   "devDependencies": {
