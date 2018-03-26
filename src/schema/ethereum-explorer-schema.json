@@ -115,7 +115,8 @@
         "autoIncrement": false
       },
       "contract": {
-        "type": "Contract"
+        "type": "Contract",
+        "unique": true
       },
       "name": {
         "type": "string"
@@ -143,7 +144,8 @@
         "type": "short"
       },
       "transaction": {
-        "type": "Transaction"
+        "type": "Transaction",
+        "unique": true
       },
       "currency": {
         "type": "Currency"

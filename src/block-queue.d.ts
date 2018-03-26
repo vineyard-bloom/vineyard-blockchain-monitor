@@ -16,8 +16,10 @@ export declare class ExternalBlockQueue {
     constructor(client: SingleTransactionBlockClient, blockIndex: number, maxSize?: number);
     getBlockIndex(): number;
     private removeRequest(blockIndex);
+    private removeBlocks(blocks);
     private onResponse(blockIndex, block);
     private addRequest(index);
     private update();
+    private getConsecutiveBlocks();
     getBlocks(): Promise<FullBlock[]>;
 }

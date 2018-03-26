@@ -478,8 +478,10 @@ export async function scanEthereumExplorerBlocks(dao: EthereumMonitorDao,
     profiler.start('getBlocks')
     const blocks = await blockQueue.getBlocks()
     profiler.stop('getBlocks')
-    if (blocks.length == 0)
+    if (blocks.length == 0) {
+      console.log('No more blocks found.')
       break
+    }
 
     console.log('Saving blocks', blocks.map(b => b.index).join(', '))
 

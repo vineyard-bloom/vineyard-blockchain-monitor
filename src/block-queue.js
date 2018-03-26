@@ -24,8 +24,12 @@ class ExternalBlockQueue {
     removeRequest(blockIndex) {
         this.requests = this.requests.filter(r => r.blockIndex != blockIndex);
     }
+    removeBlocks(blocks) {
+        this.blocks = this.blocks.filter(b => blocks.every(b2 => b2.index != b.index));
+    }
     onResponse(blockIndex, block) {
         // this.p.stop(blockIndex + '-blockQueue')
+        console.log('onResponse block', blockIndex, block != undefined);
         this.removeRequest(blockIndex);
         if (!block) {
             if (this.listeners.length > 0) {
@@ -37,16 +41,21 @@ class ExternalBlockQueue {
             }
         }
         else {
+            this.blocks.push(block);
+            const listeners = this.listeners;
             if (this.listeners.length > 0) {
-                const listeners = this.listeners;
-                this.listeners = [];
-                for (let listener of listeners) {
-                    listener.resolve([block]);
+                const readyBlocks = this.getConsecutiveBlocks();
+                if (readyBlocks.length > 0) {
+                    this.listeners = [];
+                    this.removeBlocks(readyBlocks);
+                    for (let listener of listeners) {
+                        listener.resolve(readyBlocks);
+                    }
                 }
             }
-            else {
-                this.blocks.push(block);
-            }
+            // else {
+            //   console.log('no listeners')
+            // }
         }
     }
     addRequest(index) {
@@ -77,13 +86,33 @@ class ExternalBlockQueue {
             }
         });
     }
+    // Ensures that batches of blocks are returned in consecutive order
+    getConsecutiveBlocks() {
+        if (this.blocks.length == 0)
+            return [];
+        const results = this.blocks.concat([]).sort((a, b) => a.index > b.index ? 1 : -1);
+        const oldestRequest = this.requests.map(r => r.blockIndex).sort()[0];
+        const oldestResult = results[0].index;
+        if (oldestRequest && oldestResult > oldestRequest) {
+            console.log('oldestRequest', oldestRequest, 'oldestResult', oldestResult);
+            return [];
+        }
+        const blocks = [];
+        let i = oldestResult;
+        for (let r of results) {
+            if (r.index != i++)
+                break;
+            blocks.push(r);
+        }
+        return blocks;
+    }
     getBlocks() {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.update();
-            if (this.blocks.length > 0) {
-                const result = this.blocks;
-                this.blocks = [];
-                return Promise.resolve(result);
+            const readyBlocks = this.getConsecutiveBlocks();
+            if (readyBlocks.length > 0) {
+                this.removeBlocks(readyBlocks);
+                return Promise.resolve(readyBlocks);
             }
             else if (this.requests.length == 0) {
                 return Promise.resolve([]);

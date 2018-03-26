@@ -38,8 +38,13 @@ export class ExternalBlockQueue {
     this.requests = this.requests.filter(r => r.blockIndex != blockIndex)
   }
 
+  private removeBlocks(blocks: FullBlock[]) {
+    this.blocks = this.blocks.filter(b => blocks.every(b2 => b2.index != b.index))
+  }
+
   private onResponse(blockIndex: number, block: FullBlock | undefined) {
     // this.p.stop(blockIndex + '-blockQueue')
+    console.log('onResponse block', blockIndex, block != undefined)
     this.removeRequest(blockIndex)
 
     if (!block) {
@@ -52,16 +57,21 @@ export class ExternalBlockQueue {
       }
     }
     else {
+      this.blocks.push(block)
+      const listeners = this.listeners
       if (this.listeners.length > 0) {
-        const listeners = this.listeners
-        this.listeners = []
-        for (let listener of listeners) {
-          listener.resolve([block])
+        const readyBlocks = this.getConsecutiveBlocks()
+        if (readyBlocks.length > 0) {
+          this.listeners = []
+          this.removeBlocks(readyBlocks)
+          for (let listener of listeners) {
+            listener.resolve(readyBlocks)
+          }
         }
       }
-      else {
-        this.blocks.push(block)
-      }
+      // else {
+      //   console.log('no listeners')
+      // }
     }
   }
 
@@ -96,13 +106,38 @@ export class ExternalBlockQueue {
     }
   }
 
+  // Ensures that batches of blocks are returned in consecutive order
+  private getConsecutiveBlocks(): FullBlock[] {
+    if (this.blocks.length == 0)
+      return []
+
+    const results = this.blocks.concat([]).sort((a, b) => a.index > b.index ? 1 : -1)
+    const oldestRequest = this.requests.map(r => r.blockIndex).sort()[0]
+    const oldestResult = results[0].index
+    if (oldestRequest && oldestResult > oldestRequest) {
+      console.log('oldestRequest', oldestRequest, 'oldestResult', oldestResult)
+      return []
+    }
+
+    const blocks = []
+    let i = oldestResult
+    for (let r of results) {
+      if (r.index != i++)
+        break
+
+      blocks.push(r)
+    }
+
+    return blocks
+  }
+
   async getBlocks(): Promise<FullBlock[]> {
     await this.update()
 
-    if (this.blocks.length > 0) {
-      const result = this.blocks
-      this.blocks = []
-      return Promise.resolve(result)
+    const readyBlocks = this.getConsecutiveBlocks()
+    if (readyBlocks.length > 0) {
+      this.removeBlocks(readyBlocks)
+      return Promise.resolve(readyBlocks)
     }
     else if (this.requests.length == 0) {
       return Promise.resolve([])
