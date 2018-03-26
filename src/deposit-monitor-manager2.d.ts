@@ -18,6 +18,6 @@ export declare class DepositMonitorManager {
     setTransactionStatus(transaction: Transaction, status: TransactionStatus): Promise<Transaction>;
     listPending(maxBlockIndex: number): Promise<Transaction[]>;
     getLastBlock(): Promise<Block | undefined>;
-    setLastBlock(block: NewBlock): Promise<void>;
+    setLastBlock(block: NewBlock): Promise<Block>;
 }
 export declare type SingleTransactionBlockchainModel = DepositMonitorManager;
