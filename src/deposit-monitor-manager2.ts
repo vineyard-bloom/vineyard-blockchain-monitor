@@ -45,9 +45,9 @@ export class DepositMonitorManager {
   public async listPending(maxBlockIndex: number): Promise<Transaction[]> {
     const sql = `
     SELECT transactions.* FROM transactions
-    JOIN blocks ON blocks.id = transactions.block
-    AND blocks.index < :maxBlockIndex
-    WHERE status = 0 AND transactions.currency = :currency`
+    WHERE status = 0 
+    AND transactions.currency = :currency
+    AND transactions.index < :maxBlockIndex`
 
     return this.model.ground.query(sql, {
       maxBlockIndex: maxBlockIndex,

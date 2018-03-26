@@ -25,7 +25,7 @@ class DepositMonitor {
     saveExternalTransaction(source, block) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const existing = yield this.model.getTransactionByTxid(source.txid, this.currency.id);
+                const existing = yield this.model.getTransactionByTxid(source.txid);
                 if (existing) {
                     return existing;
                 }
@@ -42,7 +42,7 @@ class DepositMonitor {
                     status: this.convertStatus(source),
                     amount: source.amount,
                     timeReceived: source.timeReceived,
-                    block: block.id,
+                    block: block.index,
                     currency: this.currency.id
                 });
                 if (source.confirmations >= this.minimumConfirmations) {
@@ -66,14 +66,13 @@ class DepositMonitor {
     }
     confirmExistingTransaction(transaction) {
         return __awaiter(this, void 0, void 0, function* () {
-            transaction.status = vineyard_blockchain_1.TransactionStatus.accepted;
-            const externalTransaction = yield this.model.setStatus(transaction, vineyard_blockchain_1.TransactionStatus.accepted);
-            return yield this.transactionHandler.onConfirm(transaction);
+            const ExternalTransaction = yield this.model.setTransactionStatus(transaction, vineyard_blockchain_1.TransactionStatus.accepted);
+            return yield this.transactionHandler.onConfirm(ExternalTransaction);
         });
     }
     updatePendingTransaction(transaction) {
         return __awaiter(this, void 0, void 0, function* () {
-            const transactionFromDatabase = yield this.model.getTransactionByTxid(transaction.txid, this.currency.id);
+            const transactionFromDatabase = yield this.model.getTransactionByTxid(transaction.txid);
             if (transactionFromDatabase && transactionFromDatabase.status == vineyard_blockchain_1.TransactionStatus.pending)
                 return yield this.confirmExistingTransaction(transaction);
             return transaction;
@@ -81,7 +80,7 @@ class DepositMonitor {
     }
     scanBlocks() {
         return __awaiter(this, void 0, void 0, function* () {
-            let lastBlock = yield this.model.getLastBlock(this.currency.id);
+            let lastBlock = yield this.model.getLastBlock();
             do {
                 lastBlock = yield this.gatherTransactions(lastBlock);
             } while (lastBlock);
@@ -91,29 +90,29 @@ class DepositMonitor {
         return __awaiter(this, void 0, void 0, function* () {
             const blockInfo = yield this.client.getNextBlockInfo(lastBlock);
             if (!blockInfo)
-                return;
+                return undefined;
             const fullBlock = yield this.client.getFullBlock(blockInfo);
             if (!fullBlock) {
                 console.error('Invalid block', blockInfo);
                 return undefined;
             }
-            const block = yield this.model.saveBlock({
+            const block = {
                 hash: fullBlock.hash,
                 index: fullBlock.index,
                 timeMined: fullBlock.timeMined,
                 currency: this.currency.id
-            });
+            };
             if (!fullBlock.transactions) {
                 return block;
             }
             yield this.saveExternalTransactions(fullBlock.transactions, block);
-            yield this.model.setLastBlock(block.id, this.currency.id);
-            return block;
+            const newLastBlock = yield this.model.setLastBlock(block);
+            return newLastBlock;
         });
     }
     updatePendingTransactions(maxBlockIndex) {
         return __awaiter(this, void 0, void 0, function* () {
-            const transactions = yield this.model.listPending(this.currency.id, maxBlockIndex);
+            const transactions = yield this.model.listPending(maxBlockIndex);
             for (let transaction of transactions) {
                 try {
                     yield this.updatePendingTransaction(transaction);
