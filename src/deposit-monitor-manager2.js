@@ -45,9 +45,9 @@ class DepositMonitorManager {
         return __awaiter(this, void 0, void 0, function* () {
             const last = yield this.model.LastBlock.first({ currency: this.currency.id }).exec();
             if (!last) {
-                return last;
+                return;
             }
-            return;
+            return last;
         });
     }
     setLastBlock(block) {

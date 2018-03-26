@@ -58,9 +58,9 @@ export class DepositMonitorManager {
   public async getLastBlock(): Promise<Block | undefined> {
     const last = await this.model.LastBlock.first({ currency: this.currency.id }).exec()
     if (!last) {
-      return last
+      return
     }
-    return
+    return last
   }
 
   public async setLastBlock(block: NewBlock) {
