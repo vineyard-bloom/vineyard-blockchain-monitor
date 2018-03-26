@@ -45,9 +45,9 @@ export class DepositMonitorManager {
   public async listPending(maxBlockIndex: number): Promise<Transaction[]> {
     const sql = `
     SELECT transactions.* FROM transactions
-    JOIN blocks ON blocks.id = transactions.block
-    AND blocks.index < :maxBlockIndex
-    WHERE status = 0 AND transactions.currency = :currency`
+    WHERE status = 0 
+    AND transactions.currency = :currency
+    AND transactions.index < :maxBlockIndex`
 
     return this.model.ground.query(sql, {
       maxBlockIndex: maxBlockIndex,
@@ -58,17 +58,17 @@ export class DepositMonitorManager {
   public async getLastBlock(): Promise<Block | undefined> {
     const last = await this.model.LastBlock.first({ currency: this.currency.id }).exec()
     if (!last) {
-      return last
+      return
     }
-    return
+    return last
   }
 
   public async setLastBlock(block: NewBlock) {
-    const exists = await this.getLastBlock()
-    if (exists) {
-      await this.model.LastBlock.update({ currency: this.currency.id }, block)
+    const currentLastBlock = await this.getLastBlock()
+    if (currentLastBlock) {
+      return await this.model.LastBlock.update(currentLastBlock.id, block)
     } else {
-      await this.model.LastBlock.create(block)
+      return await this.model.LastBlock.create(block)
     }
   }
 

@@ -1,6 +1,6 @@
-import { ExternalSingleTransaction as ExternalTransaction, ReadClient, Currency, BlockInfo } from 'vineyard-blockchain';
-import { SingleTransactionBlockchainModel } from "./deposit-monitor-manager2";
-import { TransactionHandler } from "./types";
+import { ExternalTransaction, ReadClient, Currency, Block } from 'vineyard-blockchain';
+import { SingleTransactionBlockchainModel } from './deposit-monitor-manager2';
+import { TransactionHandler } from "./types2";
 export declare class DepositMonitor {
     private model;
     private client;
@@ -14,7 +14,7 @@ export declare class DepositMonitor {
     private confirmExistingTransaction(transaction);
     private updatePendingTransaction(transaction);
     scanBlocks(): Promise<void>;
-    gatherTransactions(lastBlock: BlockInfo | undefined): Promise<BlockInfo | undefined>;
-    updatePendingTransactions(maxBlockIndex: number): Promise<any>;
-    update(): Promise<any>;
+    gatherTransactions(lastBlock: Block | undefined): Promise<Block | undefined>;
+    updatePendingTransactions(maxBlockIndex: number): Promise<void>;
+    update(): Promise<void>;
 }

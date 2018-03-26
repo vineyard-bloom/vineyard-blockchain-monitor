@@ -7,9 +7,9 @@ export declare function saveTransaction(transactionCollection: Collection<Transa
 export declare function setStatus(transactionCollection: Collection<Transaction>, transaction: Transaction, status: TransactionStatus): Promise<Transaction>;
 export declare function listPendingTransactions(ground: Modeler, transactionCollection: Collection<Transaction>, currency: number, maxBlockIndex: number): Promise<Transaction[]>;
 export declare function getLastBlock(ground: Modeler, currency: number): Promise<BlockInfo | undefined>;
-export declare function setLastBlock(ground: Modeler, currency: number, blockIndex: number): Promise<any[]>;
+export declare function setLastBlock(ground: Modeler, currency: number, blockIndex: number): Promise<any>;
 export declare function getLastBlockIndex(ground: Modeler, currency: number): Promise<number | undefined>;
-export declare function setLastBlockIndex(ground: Modeler, currency: number, block: number): Promise<any[]>;
+export declare function setLastBlockIndex(ground: Modeler, currency: number, block: number): Promise<any>;
 export declare function saveBlock(blockCollection: Collection<BlockInfo>, block: BaseBlock): Promise<BlockInfo>;
 export declare function createBlockDao(model: Model): BlockDao;
 export declare function createIndexedLastBlockDao(ground: Modeler, currency: number): LastBlockDao;
