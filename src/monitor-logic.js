@@ -143,5 +143,5 @@ function isReadyToConfirm(dao, transaction) {
 //   do {
 //     lastBlock = await gatherTransactions(dao, shouldTrackTransaction, saveTransaction, client, currency, lastBlock)
 //   } while (lastBlock)
-// } 
+// }
 //# sourceMappingURL=monitor-logic.js.map

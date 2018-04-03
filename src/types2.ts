@@ -96,4 +96,5 @@ export interface WriteClient {
 export interface TransactionHandler {
   shouldTrackTransaction(transaction: ExternalTransaction): Promise<boolean>
   onConfirm(transaction: Transaction): Promise<Transaction>
+  onSave(transaction: Transaction): Promise<Transaction>
 }

@@ -45,6 +45,7 @@ class DepositMonitor {
                     block: block.index,
                     currency: this.currency.id
                 });
+                this.transactionHandler.onSave(transaction);
                 if (source.confirmations >= this.minimumConfirmations) {
                     return yield this.transactionHandler.onConfirm(transaction);
                 }

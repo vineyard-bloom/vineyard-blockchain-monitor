@@ -55,6 +55,8 @@ export class DepositMonitor {
         currency: this.currency.id 
       })
 
+      this.transactionHandler.onSave(transaction)
+
       if (source.confirmations >= this.minimumConfirmations) {
         return await this.transactionHandler.onConfirm(transaction)
       }
