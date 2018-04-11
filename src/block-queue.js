@@ -11,6 +11,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 class ExternalBlockQueue {
     // p = new Profiler()
     constructor(client, blockIndex, config) {
+        this.queuedUp = [];
         this.blocks = [];
         this.requests = [];
         this.listeners = [];
@@ -83,7 +84,8 @@ class ExternalBlockQueue {
             }
             const remaining = this.highestBlockIndex - this.blockIndex;
             const count = Math.min(remaining, this.config.maxSize) - this.requests.length;
-            console.log('Adding blocks', Array.from(new Array(count), (x, i) => i + this.blockIndex).join(', '));
+            this.queuedUp = Array.from(new Array(count), (x, i) => i + this.blockIndex);
+            console.log("Adding blocks: " + this.queuedUp.join(', '));
             for (let i = 0; i < count; ++i) {
                 this.addRequest(this.blockIndex++);
             }

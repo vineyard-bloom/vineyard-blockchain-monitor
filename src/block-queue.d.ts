@@ -11,6 +11,7 @@ export interface IndexedBlock {
     index: number;
 }
 export declare class ExternalBlockQueue<Block extends IndexedBlock> {
+    queuedUp: number[];
     private blocks;
     private blockIndex;
     private highestBlockIndex;

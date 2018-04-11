@@ -25,6 +25,8 @@
     "vineyard-bitcoin": "vineyard-bloom/vineyard-bitcoin#1.0.0-beta",
     "vineyard-docs": "vineyard-bloom/vineyard-docs#1.0.0-beta",
     "vineyard-ethereum": "vineyard-bloom/vineyard-ethereum#1.0.0-beta",
-    "vineyard-ground": "vineyard-bloom/vineyard-ground#1.x"
+    "vineyard-ground": "vineyard-bloom/vineyard-ground#1.x",
+    "ts-node": "^3.3.0",
+    "typescript": "~2.5.3"
   }
 }
