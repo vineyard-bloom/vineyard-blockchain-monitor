@@ -14,9 +14,10 @@ export declare class ExternalBlockQueue<Block extends IndexedBlock> {
     queuedUp: number[];
     private blocks;
     private blockIndex;
-    private highestBlockIndex;
+    private highestBlockIndex?;
     private client;
     private config;
+    private errors;
     requests: BlockRequest[];
     private listeners;
     constructor(client: blockchain.BlockReader<Block>, blockIndex: number, config: BlockQueueConfig);

@@ -13,6 +13,8 @@ class ExternalBlockQueue {
     constructor(client, blockIndex, config) {
         this.queuedUp = [];
         this.blocks = [];
+        this.highestBlockIndex = undefined;
+        this.errors = [];
         this.requests = [];
         this.listeners = [];
         this.client = client;
@@ -42,6 +44,11 @@ class ExternalBlockQueue {
                 for (let listener of listeners) {
                     listener.reject(new Error("Error loading block"));
                 }
+            }
+            else {
+                this.errors.push({
+                    blockIndex: blockIndex
+                });
             }
         }
         else {
@@ -84,6 +91,8 @@ class ExternalBlockQueue {
             }
             const remaining = this.highestBlockIndex - this.blockIndex;
             const count = Math.min(remaining, this.config.maxSize) - this.requests.length;
+            if (count < 1)
+                return;
             this.queuedUp = Array.from(new Array(count), (x, i) => i + this.blockIndex);
             console.log("Adding blocks: " + this.queuedUp.join(', '));
             for (let i = 0; i < count; ++i) {
@@ -117,6 +126,8 @@ class ExternalBlockQueue {
     getBlocks() {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.update();
+            if (this.errors.length > 0)
+                throw new Error("Error processing block " + this.errors[0].blockIndex);
             const readyBlocks = this.getConsecutiveBlocks();
             if (readyBlocks.length > 0) {
                 this.removeBlocks(readyBlocks);

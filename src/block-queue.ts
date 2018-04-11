@@ -14,13 +14,18 @@ export interface IndexedBlock {
   index: number
 }
 
+interface BlockError {
+  blockIndex: number
+}
+
 export class ExternalBlockQueue<Block extends IndexedBlock> {
   queuedUp: number[] = []
   private blocks: Block[] = []
   private blockIndex: number
-  private highestBlockIndex: number
+  private highestBlockIndex?: number = undefined
   private client: blockchain.BlockReader<Block>
   private config: BlockQueueConfig
+  private errors: BlockError[] = []
   requests: BlockRequest[] = []
   private listeners: {
     resolve: (block: Block[]) => void
@@ -63,6 +68,11 @@ export class ExternalBlockQueue<Block extends IndexedBlock> {
         for (let listener of listeners) {
           listener.reject(new Error("Error loading block"))
         }
+      }
+      else {
+        this.errors.push({
+          blockIndex: blockIndex
+        })
       }
     }
     else {
@@ -109,6 +119,9 @@ export class ExternalBlockQueue<Block extends IndexedBlock> {
 
     const remaining = this.highestBlockIndex - this.blockIndex
     const count = Math.min(remaining, this.config.maxSize) - this.requests.length
+    if (count < 1)
+      return
+
     this.queuedUp = Array.from(new Array(count), (x, i) => i + this.blockIndex)
     console.log("Adding blocks: " + this.queuedUp.join(', '))
     for (let i = 0; i < count; ++i) {
@@ -147,13 +160,16 @@ export class ExternalBlockQueue<Block extends IndexedBlock> {
   async getBlocks(): Promise<Block[]> {
     await this.update()
 
+    if (this.errors.length > 0)
+      throw new Error("Error processing block " + this.errors[0].blockIndex)
+
     const readyBlocks = this.getConsecutiveBlocks()
     if (readyBlocks.length > 0) {
       this.removeBlocks(readyBlocks)
       return Promise.resolve(readyBlocks)
     }
     else if (this.requests.length == 0) {
-        return Promise.resolve([])
+      return Promise.resolve([])
     }
     else {
       return new Promise<Block[]>((resolve, reject) => {
