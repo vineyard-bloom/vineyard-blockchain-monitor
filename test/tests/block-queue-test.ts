@@ -180,7 +180,7 @@ describe('queue test', function () {
     const numberToProcessPerGetBlocksCall = 8
 
     const underTest = new ExternalBlockQueue(
-      getMockBlockReader(highestBlock, (index) => index == 7),
+      getMockBlockReader(highestBlock, never,(index) => index == 7),
       0,
       {
         maxSize: numberToProcessPerGetBlocksCall,

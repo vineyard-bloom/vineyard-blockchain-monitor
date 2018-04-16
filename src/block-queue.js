@@ -91,10 +91,10 @@ class ExternalBlockQueue {
             }
             const remaining = this.highestBlockIndex - this.blockIndex;
             const count = Math.min(remaining, this.config.maxSize) - this.requests.length;
-            if (count < 1)
-                return;
             this.queuedUp = Array.from(new Array(count), (x, i) => i + this.blockIndex);
             console.log("Adding blocks: " + this.queuedUp.join(', '));
+            if (count < 1)
+                return;
             for (let i = 0; i < count; ++i) {
                 this.addRequest(this.blockIndex++);
             }

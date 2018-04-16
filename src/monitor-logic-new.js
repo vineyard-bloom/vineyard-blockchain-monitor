@@ -97,5 +97,5 @@
 //     await dao.lastBlockDao.setLastBlock(block.id)
 //     lastBlock = block
 //   } while (true)
-// }
+// } 
 //# sourceMappingURL=monitor-logic-new.js.map
