@@ -158,4 +158,16 @@ describe('eth-scan', function () {
     assert.isAtLeast(transfers.length, 1)
   })
 
+  it('pulls transactions for block 523730', async function () {
+    await model.LastBlock.create({ currency: 2, blockIndex: 523730 })
+    console.log('Initialized village')
+    await startEthereumMonitor(village, {
+      queue: { maxSize: 1, minSize: 1 },
+      maxMilliseconds: 10 * second
+    })
+
+    const transactions = await model.Transaction.all()
+    assert.equal(transactions.length, 1, 'There should only be 1 transaction in block 523730')
+  })
+
 })
