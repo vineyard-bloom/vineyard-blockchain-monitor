@@ -22,6 +22,7 @@ describe('queue test', function () {
     const underTest = new ExternalBlockQueue(
       getMockBlockReader(highestBlock),
       0,
+      highestBlock,
       {
         maxSize: numberToProcessPerGetBlocksCall,
         minSize: getBlocksResponseSize
@@ -46,9 +47,12 @@ describe('queue test', function () {
     const underTest = new ExternalBlockQueue(
       getMockBlockReader(highestBlock),
       0,
+      highestBlock,
       {
-        maxSize: 1,
-        minSize: 20
+        // maxSize: 1,
+        // minSize: 20
+        maxSize: numberToProcessPerGetBlocksCall,
+        minSize: getBlocksResponseSize
       }
     )
 
@@ -70,6 +74,7 @@ describe('queue test', function () {
     const underTest = new ExternalBlockQueue(
       getMockBlockReader(highestBlock),
       0,
+      highestBlock,
       {
         maxSize: numberToProcessPerGetBlocksCall,
         minSize: getBlocksResponseSize
@@ -92,6 +97,7 @@ describe('queue test', function () {
     const underTest = new ExternalBlockQueue(
       getMockBlockReader(highestBlock),
       0,
+      highestBlock,
       {
         maxSize: numberToProcessPerGetBlocksCall,
         minSize: getBlocksResponseSize
@@ -119,6 +125,7 @@ describe('queue test', function () {
     const underTest = new ExternalBlockQueue(
       getMockBlockReader(highestBlock),
       0,
+      highestBlock,
       {
         maxSize: numberToProcessPerGetBlocksCall,
         minSize: getBlocksResponseSize
@@ -148,6 +155,7 @@ describe('queue test', function () {
     const underTest = new ExternalBlockQueue(
       getMockBlockReader(highestBlock, (index) => index == 2),
       0,
+      highestBlock,
       {
         maxSize: numberToProcessPerGetBlocksCall,
         minSize: getBlocksResponseSize
@@ -179,6 +187,7 @@ describe('queue test', function () {
     const underTest = new ExternalBlockQueue(
       getMockBlockReader(highestBlock, (index) => index == 0),
       0,
+      highestBlock,
       {
         maxSize: numberToProcessPerGetBlocksCall,
         minSize: getBlocksResponseSize
@@ -203,6 +212,7 @@ describe('queue test', function () {
     const underTest = new ExternalBlockQueue(
       getMockBlockReader(highestBlock, (index) => index == 4),
       0,
+      highestBlock,
       {
         maxSize: numberToProcessPerGetBlocksCall,
         minSize: getBlocksResponseSize
@@ -227,6 +237,7 @@ describe('queue test', function () {
     const underTest = new ExternalBlockQueue(
       getMockBlockReader(highestBlock, never,(index) => index == 7),
       0,
+      highestBlock,
       {
         maxSize: numberToProcessPerGetBlocksCall,
         minSize: getBlocksResponseSize

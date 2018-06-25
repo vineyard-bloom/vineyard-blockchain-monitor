@@ -7,13 +7,13 @@ import { Modeler } from "vineyard-data/legacy";
 export declare enum ScannedBlockStatus {
     _new = 0,
     same = 1,
-    replaced = 2
+    replaced = 2,
 }
 export declare type BlockSaver<Block extends IndexedBlock> = (blocks: Block[]) => Promise<void>;
 export interface IndexedHashedBlock extends IndexedBlock {
     hash: string;
 }
-export declare function createBlockQueue<Block extends IndexedBlock>(lastBlockDao: LastBlockDao, client: blockchain.BlockReader<Block>, queueConfig: Partial<BlockQueueConfig>, minConfirmations: number, startingBlockIndex: number): Promise<ExternalBlockQueue<Block>>;
+export declare function createBlockQueue<Block extends IndexedBlock>(lastBlockDao: LastBlockDao, client: blockchain.BlockReader<Block>, queueConfig: Partial<BlockQueueConfig>, minConfirmations: number, startingBlockIndex: number): Promise<any>;
 export interface BlockSource {
     getHighestBlockIndex(): Promise<number>;
     getBlock(index: number): Promise<blockchain.Block>;

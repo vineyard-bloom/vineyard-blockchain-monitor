@@ -24,7 +24,7 @@ export declare class SimpleProfiler implements Profiler {
     start(name: string): void;
     stop(name?: string): void;
     next(name: string): void;
-    private formatAverage;
+    private formatAverage(cumulativeAverage);
     log(profiles?: ProfilerMap): void;
     logFlat(): void;
 }
