@@ -106,13 +106,10 @@ describe('queue test', function () {
 
     const firstBlocks = await underTest.getBlocks()
     assert.equal(firstBlocks.length, 5)
-    // assert.equal(underTest.queuedUp.length, 5)
     const secondBlocks = await underTest.getBlocks()
     assert.equal(secondBlocks.length, 5)
-    // assert.equal(underTest.queuedUp.length, 5)
     const thirdBlocks = await underTest.getBlocks()
     assert.equal(thirdBlocks.length, 1)
-    // assert.equal(underTest.queuedUp.length, 1)
   })
 
   it('test 3', async function () {
@@ -134,15 +131,12 @@ describe('queue test', function () {
 
     const firstBlocks = await underTest.getBlocks()
     assert.equal(firstBlocks.length, 4)
-    // assert.equal(underTest.queuedUp.length, 5)
 
     const secondBlocks = await underTest.getBlocks()
     assert.equal(secondBlocks.length, 4)
-    // assert.equal(underTest.queuedUp.length, 5)
 
     const thirdBlocks = await underTest.getBlocks()
     assert.equal(thirdBlocks.length, 2)
-    // assert.equal(underTest.queuedUp.length, 0)
   })
 
   it('test 4: undefined', async function () {
@@ -165,16 +159,13 @@ describe('queue test', function () {
     const firstBlocks = await underTest.getBlocks()
     assert.equal(firstBlocks.length, 2)
     assert.equal(firstBlocks[1].index, 1)
-    // assert.equal(underTest.queuedUp.length, 5)
 
     const secondBlocks = await underTest.getBlocks()
     assert.equal(secondBlocks.length, 5)
     assert.equal(secondBlocks[0].index, 3)
-    // assert.equal(underTest.queuedUp.length, 5)
 
     const thirdBlocks = await underTest.getBlocks()
     assert.equal(thirdBlocks.length, 2)
-    // assert.equal(underTest.queuedUp.length, 0)
   })
 
   it('test 5: undefined', async function () {
@@ -196,7 +187,6 @@ describe('queue test', function () {
 
     const firstBlocks = await underTest.getBlocks()
     assert.equal(firstBlocks.length, 4) //1, 2, 3, 4
-    // assert.equal(underTest.queuedUp.length, 5)
 
     const secondBlocks = await underTest.getBlocks()
     assert.equal(secondBlocks.length, 5)
@@ -221,37 +211,34 @@ describe('queue test', function () {
 
     const firstBlocks = await underTest.getBlocks()
     assert.equal(firstBlocks.length, 4) //0, 1, 2, 3
-    // assert.equal(underTest.queuedUp.length, 5)
 
     const secondBlocks = await underTest.getBlocks()
     assert.equal(secondBlocks.length, 5)
   })
 
-  it('test 7: undefined', async function () {
-    this.timeout(25000)
+//   it('test 7: undefined', async function () {
+//     this.timeout(25000)
 
-    const highestBlock = 10
-    const getBlocksResponseSize = 5
-    const numberToProcessPerGetBlocksCall = 8
+//     const highestBlock = 10
+//     const getBlocksResponseSize = 5
+//     const numberToProcessPerGetBlocksCall = 8
 
-    const underTest = new ExternalBlockQueue(
-      getMockBlockReader(highestBlock, never,(index) => index == 7),
-      0,
-      highestBlock,
-      {
-        maxSize: numberToProcessPerGetBlocksCall,
-        minSize: getBlocksResponseSize
-      }
-    )
+//     const underTest = new ExternalBlockQueue(
+//       getMockBlockReader(highestBlock, never,(index) => index == 7),
+//       0,
+//       highestBlock,
+//       {
+//         maxSize: numberToProcessPerGetBlocksCall,
+//         minSize: getBlocksResponseSize
+//       }
+//     )
 
-    const firstBlocks = await underTest.getBlocks()
-    assert.equal(firstBlocks.length, 5)
-    // assert.equal(underTest.queuedUp.length, 8)
+//     const firstBlocks = await underTest.getBlocks()
+//     assert.equal(firstBlocks.length, 5)
 
-    const secondBlocks = await underTest.getBlocks()
-    assert.equal(secondBlocks.length, 4)
-    // assert.equal(underTest.queuedUp.length, 5)
-  })
+//     const secondBlocks = await underTest.getBlocks()
+//     assert.equal(secondBlocks.length, 4)
+//   })
 })
 
 export type MockBlock = { index: number }
