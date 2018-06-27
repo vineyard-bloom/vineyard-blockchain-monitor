@@ -17,14 +17,15 @@ const blockQueueConfigDefaults = {
   minSize: 1
 }
 
-export interface IndexedBlock {
+interface IndexedBlock<Block> {
   index: number
+  block: Block
 }
 
 type SimpleFunction = () => Promise<any>
 
-export class ExternalBlockQueue<Block extends IndexedBlock> {
-  private blocks: Block[] = []
+export class ExternalBlockQueue<Block> {
+  private blocks: IndexedBlock<Block>[] = []
   private blockIndex: number
   private highestBlockIndex: number
   private client: blockchain.BlockReader<Block>
@@ -51,7 +52,7 @@ export class ExternalBlockQueue<Block extends IndexedBlock> {
     this.requests = this.requests.filter(r => r.blockIndex != blockIndex)
   }
 
-  private removeBlocks(blocks: Block[]) {
+  private removeBlocks(blocks: IndexedBlock<Block>[]) {
     this.blocks = this.blocks.filter(b => blocks.every(b2 => b2.index != b.index))
   }
 
@@ -68,15 +69,15 @@ export class ExternalBlockQueue<Block extends IndexedBlock> {
       }
     }
     else {
-      this.blocks.push(block)
+      this.blocks.push({ block, index: blockIndex })
       const listeners = this.listeners
       if (this.listeners.length > 0) {
         const readyBlocks = this.getConsecutiveBlocks()
         if (readyBlocks.length >= this.config.minSize || this.requests.length == 0) {
           this.listeners = []
-          this.removeBlocks(readyBlocks)
+          const result = this.releaseBlocks(readyBlocks)
           for (let listener of listeners) {
-            listener.resolve(readyBlocks)
+            listener.resolve(result)
           }
         }
       }
@@ -124,7 +125,7 @@ export class ExternalBlockQueue<Block extends IndexedBlock> {
   }
 
   // Ensures that batches of blocks are returned in consecutive order
-  private getConsecutiveBlocks(): Block[] {
+  private getConsecutiveBlocks(): IndexedBlock<Block>[] {
     if (this.blocks.length == 0)
       return []
 
@@ -135,7 +136,7 @@ export class ExternalBlockQueue<Block extends IndexedBlock> {
       return []
     }
 
-    const blocks: Block[] = []
+    const blocks: IndexedBlock<Block>[] = []
     let i = oldestResult
     for (let r of results) {
       if (r.index != i++)
@@ -156,12 +157,12 @@ export class ExternalBlockQueue<Block extends IndexedBlock> {
     })
   }
 
-  private releaseBlocks(blocks: Block[]): Promise<Block[]> {
+  private releaseBlocks(blocks: IndexedBlock<Block>[]): Block[] {
     this.removeBlocks(blocks)
-    return Promise.resolve(blocks)
+    return blocks.map(i => i.block)
   }
 
-  getBlocks(): Promise<Block[]> {
+  async getBlocks(): Promise<Block[]> {
     const readyBlocks = this.getConsecutiveBlocks()
     const nextRequestCount = this.getNextRequestCount()
 

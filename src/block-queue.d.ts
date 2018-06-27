@@ -8,10 +8,7 @@ export interface BlockQueueConfig {
     maxBlockRequests: number;
     minSize: number;
 }
-export interface IndexedBlock {
-    index: number;
-}
-export declare class ExternalBlockQueue<Block extends IndexedBlock> {
+export declare class ExternalBlockQueue<Block> {
     private blocks;
     private blockIndex;
     private highestBlockIndex;

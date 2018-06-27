@@ -9,11 +9,11 @@ export declare class DepositMonitor {
     private minimumConfirmations;
     private transactionHandler;
     constructor(model: SingleTransactionBlockchainModel, client: ReadClient<ExternalTransaction>, currency: Currency, minimumConfirmations: number, transactionHandler: TransactionHandler);
-    private convertStatus;
-    private saveExternalTransaction;
-    private saveExternalTransactions;
-    private confirmExistingTransaction;
-    private updatePendingTransaction;
+    private convertStatus(highestBlock, source);
+    private saveExternalTransaction(source, blockIndex);
+    private saveExternalTransactions(transactions, blockIndex);
+    private confirmExistingTransaction(transaction);
+    private updatePendingTransaction(transaction);
     scanBlocks(): Promise<void>;
     gatherTransactions(lastBlock: LastBlock | undefined): Promise<LastBlock | undefined>;
     updatePendingTransactions(maxBlockIndex: number): Promise<void>;

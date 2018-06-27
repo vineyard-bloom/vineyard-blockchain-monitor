@@ -44,15 +44,15 @@ class ExternalBlockQueue {
             }
         }
         else {
-            this.blocks.push(block);
+            this.blocks.push({ block, index: blockIndex });
             const listeners = this.listeners;
             if (this.listeners.length > 0) {
                 const readyBlocks = this.getConsecutiveBlocks();
                 if (readyBlocks.length >= this.config.minSize || this.requests.length == 0) {
                     this.listeners = [];
-                    this.removeBlocks(readyBlocks);
+                    const result = this.releaseBlocks(readyBlocks);
                     for (let listener of listeners) {
-                        listener.resolve(readyBlocks);
+                        listener.resolve(result);
                     }
                 }
             }
@@ -121,20 +121,22 @@ class ExternalBlockQueue {
     }
     releaseBlocks(blocks) {
         this.removeBlocks(blocks);
-        return Promise.resolve(blocks);
+        return blocks.map(i => i.block);
     }
     getBlocks() {
-        const readyBlocks = this.getConsecutiveBlocks();
-        const nextRequestCount = this.getNextRequestCount();
-        if (nextRequestCount == 0) {
-            return this.releaseBlocks(readyBlocks);
-        }
-        else {
-            this.update(nextRequestCount);
-            return readyBlocks.length >= this.config.minSize
-                ? this.releaseBlocks(readyBlocks)
-                : this.addListener();
-        }
+        return __awaiter(this, void 0, void 0, function* () {
+            const readyBlocks = this.getConsecutiveBlocks();
+            const nextRequestCount = this.getNextRequestCount();
+            if (nextRequestCount == 0) {
+                return this.releaseBlocks(readyBlocks);
+            }
+            else {
+                this.update(nextRequestCount);
+                return readyBlocks.length >= this.config.minSize
+                    ? this.releaseBlocks(readyBlocks)
+                    : this.addListener();
+            }
+        });
     }
 }
 exports.ExternalBlockQueue = ExternalBlockQueue;
